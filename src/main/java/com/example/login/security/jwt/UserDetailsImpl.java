@@ -27,12 +27,13 @@ public class UserDetailsImpl implements UserDetails{
 	private String city;
 	private String district;
 	private String ward;
+	private String passtoken;
 	
 	
 	
 	public UserDetailsImpl(Long id, String username, String email, String password,
 			Collection<? extends GrantedAuthority> authorities, String phone_number, String address_1,
-			 String city, String district, String ward) {
+			 String city, String district, String ward, String passtoken) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -44,6 +45,7 @@ public class UserDetailsImpl implements UserDetails{
 		this.city = city;
 		this.district = district;
 		this.ward = ward;
+		this.passtoken = passtoken;
 	}
 //	public UserDetailsImpl(Long id, String username, String email, String password,
 //			Collection<? extends GrantedAuthority> authorities) {
@@ -67,7 +69,8 @@ public class UserDetailsImpl implements UserDetails{
 				user.getAddress_1(),
 				user.getCity(),
 				user.getDistrict(),
-				user.getWard()
+				user.getWard(),
+				user.getPasstoken()
 				);
 	}
 	@Override
@@ -95,6 +98,9 @@ public class UserDetailsImpl implements UserDetails{
 	}
 	public String getWard() {
 		return ward;
+	}
+	public String getPasstoken() {
+		return passtoken;
 	}
 
 	@Override

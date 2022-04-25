@@ -3,6 +3,7 @@ package com.example.login.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -51,6 +52,8 @@ public class User {
 	private String city;
 	private String district;
 	private String ward;
+	@Column(unique = true)
+	private String passtoken;
 	
 	public User() {
 		super();
@@ -58,7 +61,7 @@ public class User {
 
 	public User(@NotBlank @Size(max = 20) String username, @NotBlank @Size(max = 50) @Email String email,
 			@NotBlank @Size(max = 120) String password, Set<Role> roles, String phone_number, String address_1,
-			String city, String district, String ward) {
+			String city, String district, String ward, String rs_pass_token) {
 		super();
 		this.username = username;
 		this.email = email;
@@ -69,6 +72,7 @@ public class User {
 		this.city = city;
 		this.district = district;
 		this.ward = ward;
+		this.passtoken = rs_pass_token;
 	}
 	
 	

@@ -13,8 +13,18 @@ import com.example.login.model.User;
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
 	Optional<User> findByUsername(String username);
+	
 	Optional<User> findById(Long id);
+	
+	Optional<User> findByEmail(String email);
+	
+//	@Query("SELECT u FROM User u WHERE u.email = ?1")
+//	public User findByEmail(String email);
+	
+	Optional<User> findByPasstoken(String token);
+	
 	Boolean existsByUsername(String username);
+	
 	Boolean existsByEmail(String email);
 	
 }
