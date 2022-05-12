@@ -1,20 +1,26 @@
 package com.example.login.model;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "products")
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,29 +41,9 @@ public class Product {
 	private double prodprice;
 	@Column(name = "prod_status", nullable = false)
 	private Boolean prodstatus;
-	
+
 	@ManyToOne
-	@JoinColumn(name = "cat_id", referencedColumnName = "id")
-	private Category category;
-
-	public Product() {
-		super();
-	}
-
-	public Product(String sku, String prodname, String prodtype, String prodsize, String proddescription,
-			int prodinstock, double prodprice, Boolean prodstatus, Category category) {
-		super();
-		this.sku = sku;
-		this.prodname = prodname;
-		this.prodtype = prodtype;
-		this.prodsize = prodsize;
-		this.proddescription = proddescription;
-		this.prodinstock = prodinstock;
-		this.prodprice = prodprice;
-		this.prodstatus = prodstatus;
-		this.category = category;
-	}
+	private Category categories;
 	
 	
 }
-

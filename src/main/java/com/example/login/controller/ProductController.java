@@ -5,23 +5,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.aspectj.weaver.ast.Or;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.login.model.Product;
 import com.example.login.repo.ProductRepo;
+import com.example.login.specification.staticmetamodel.ProductRequest;
+import com.example.login.specification.staticmetamodel.ProductSpectification;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -29,77 +33,58 @@ import com.example.login.repo.ProductRepo;
 public class ProductController {
 	@Autowired
 	private ProductRepo productRepo;
-	
-	 private Sort.Direction getSortDirection(String direction) {
-		    if (direction.equals("asc")) {
-		      return Sort.Direction.ASC;
-		    } else if (direction.equals("desc")) {
-		      return Sort.Direction.DESC;
-		    }
-			return Sort.Direction.ASC;
-		}
 
-	@GetMapping("/products")
-	public ResponseEntity<Map<String, Object>> getAllProducts(@RequestParam(required = false) String title,
-			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size) {
-		try {
-			List<Product> products = new ArrayList<Product>();
-			Pageable paging = PageRequest.of(page, size);
+	@Autowired
+	private ProductSpectification productSpectification;
 
-			Page<Product> pageProds;
-			if (title == null)
-				pageProds = productRepo.findAll(paging);
-			else
-				pageProds = productRepo.findByProdnameContaining(title, paging);
-			products = pageProds.getContent();
-			Map<String, Object> response = new HashMap<>();
-			response.put("products", products);
-			response.put("currentPage", pageProds.getNumber());
-			response.put("totalItems", pageProds.getTotalElements());
-			response.put("totalPages", pageProds.getTotalPages());
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+//	@GetMapping("/products")
+//	public ResponseEntity<Map<String, Object>> getAllProducts(@RequestParam(required = false) String title,
+//			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size) {
+//		try {
+//			List<Product> products = new ArrayList<Product>();
+//			Pageable paging = PageRequest.of(page, size);
+//
+//			Page<Product> pageProds;
+//			if (title == null)
+//				pageProds = productRepo.findAll(paging);
+//			else
+//				pageProds = productRepo.findByProdnameContaining(title, paging);
+//			products = pageProds.getContent();
+//			Map<String, Object> response = new HashMap<>();
+//			response.put("products", products);
+//			response.put("currentPage", pageProds.getNumber());
+//			response.put("totalItems", pageProds.getTotalElements());
+//			response.put("totalPages", pageProds.getTotalPages());
+//			return new ResponseEntity<>(response, HttpStatus.OK);
+//		} catch (Exception e) {
+//			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
+	@GetMapping("/products-info")
+	public List<Product> getInfo(){
+		return productRepo.findAll();
 	}
 
-	@GetMapping("/products-sort-price-desc")
-	public ResponseEntity<Map<String, Object>> getAllProductsSorted(@RequestParam(required = false) String title,
-			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size,
-			@RequestParam(defaultValue = "prodprice,desc") String[] sort) {
-		try {
-
-			List<Order> orders = new ArrayList<Order>();
-			if (sort[0].contains(",")) {
-				// will sort more than 2 fields
-				// sortOrder="field, direction"
-				for (String sortOrder : sort) {
-					String[] _sort = sortOrder.split(",");
-					orders.add(new Order(getSortDirection(_sort[1]), _sort[0]));
-				}
-			} else {
-				// sort=[field, direction]
-				orders.add(new Order(getSortDirection(sort[1]), sort[0]));
-			}
-			List<Product> products = new ArrayList<Product>();
-			
-			Pageable pagingSort = PageRequest.of(page, size, Sort.by(orders));
-
-			Page<Product> pageProds;
-			if (title == null)
-				pageProds = productRepo.findAll(pagingSort);
-			else
-				pageProds = productRepo.findByProdnameContaining(title, pagingSort);
-			products = pageProds.getContent();
-			Map<String, Object> response = new HashMap<>();
-			response.put("products", products);
-			response.put("currentPage", pageProds.getNumber());
-			response.put("totalItems", pageProds.getTotalElements());
-			response.put("totalPages", pageProds.getTotalPages());
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+	@PostMapping("/products/{page}/{size}")
+	public ResponseEntity<Map<String, Object>> test2(@Valid @RequestBody(required = false) ProductRequest productRequest,
+			@PathVariable("page") int page, @PathVariable("size") int size) {
+		Pageable paging = PageRequest.of(page, size);
+		Page<Product> pageProds;
+		List<Product> products = new ArrayList<Product>();
+		if (productRequest == null) {
+			pageProds = productRepo.findAll(paging);
+		} else {
+			pageProds = productRepo.findAll(productSpectification.getProds(productRequest), paging);
 		}
+		products = pageProds.getContent();
+		if (products.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		Map<String, Object> response = new HashMap<>();
+		response.put("products", products);
+		response.put("currentPage", pageProds.getNumber());
+		response.put("totalItems", pageProds.getTotalElements());
+		response.put("totalPages", pageProds.getTotalPages());
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-
 }
