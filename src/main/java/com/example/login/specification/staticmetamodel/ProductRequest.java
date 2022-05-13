@@ -1,5 +1,6 @@
 package com.example.login.specification.staticmetamodel;
 
+
 import lombok.Getter;
 import lombok.Setter;
 
