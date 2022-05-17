@@ -27,18 +27,15 @@ public class ProductSpectification {
 				predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("prodtype")),
 						"%" + request.getProdType().toLowerCase() + "%"));
 			}
-			
 			if (request.getCatName() != null && !request.getCatName().isEmpty()) {
 				predicates.add(criteriaBuilder.equal(root.get("categories").get("catname"), request.getCatName()));
 			}
-
 			if (request.getSort().matches("asc") && request.getSort() != null && !request.getSort().isEmpty()) {
 				query.orderBy(criteriaBuilder.asc(root.get("prodprice")));
 			}
 			if (request.getSort().matches("desc") && request.getSort() != null && !request.getSort().isEmpty()) {
 				query.orderBy(criteriaBuilder.desc(root.get("prodprice")));
 			}
-			
 			return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 		};
 	}

@@ -84,4 +84,14 @@ public class ProductController {
 	public Optional<Product> getDetails(@PathVariable("id") Long id){
 		return productRepo.findById(id);
 	}
+	
+	@GetMapping("/product-details-sku/{sku}")
+	public Map<String, String> getSizes(@PathVariable("sku") String sku){
+		Map<String, String> response = new HashMap<>();
+		List<String> data =  productRepo.customQuery(sku);
+		for (int i=0;i<data.size();i++) {
+			response.put(data.get(i).split(",")[0], data.get(i).split(",")[1]);
+		}
+		return response;
+	}
 }

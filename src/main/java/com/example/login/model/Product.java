@@ -41,7 +41,12 @@ public class Product {
 	private double prodprice;
 	@Column(name = "prod_status", nullable = false)
 	private Boolean prodstatus;
-
+	@Column(name = "prod_color", nullable = false)
+	private String prodcolor;
+	@Column(name = "prod_img1")
+	private String prodimg1;
+	@Column(name = "prod_img2")
+	private String prodimg2;
 	@ManyToOne
 	private Category categories;
 	
