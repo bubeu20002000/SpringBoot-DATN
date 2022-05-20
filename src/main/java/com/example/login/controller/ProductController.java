@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -93,5 +95,14 @@ public class ProductController {
 			response.put(data.get(i).split(",")[0], data.get(i).split(",")[1]);
 		}
 		return response;
+	}
+	
+	@GetMapping("/new-products")
+	public List<Product> getNewProds(){
+		Pageable pageable = PageRequest.of(0, 15, Direction.DESC, "id");
+		List<Product> data = productRepo.customQueryNewPros(pageable);
+		HashSet<Object> seen=new HashSet<>();
+		data.removeIf(c -> !seen.add(Arrays.asList(c.getSku())));
+		return data;
 	}
 }

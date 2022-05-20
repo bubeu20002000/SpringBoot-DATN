@@ -20,7 +20,6 @@ import com.example.login.repo.UserRepo;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/user")
-
 public class UserController {
 	@Autowired
 	UserRepo userRepo;
